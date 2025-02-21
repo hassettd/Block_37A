@@ -10,6 +10,7 @@ const seed = async () => {
     // SQL to drop tables if they exist, and recreate them
     const SQL = `
       -- Drop tables if they exist
+      DROP TABLE IF EXISTS comments CASCADE;
       DROP TABLE IF EXISTS cars CASCADE;
       DROP TABLE IF EXISTS users CASCADE;
       DROP TABLE IF EXISTS reviews CASCADE;
@@ -37,8 +38,20 @@ const seed = async () => {
         score INT CHECK (score >= 1 AND score <= 5),
         UNIQUE(user_id, car_id)  -- Ensures a user can only leave one review per car
       );
+
+       -- Create comments table
+      CREATE TABLE comments (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+        review_id UUID REFERENCES reviews(id) ON DELETE CASCADE,
+        comment_text TEXT NOT NULL,
+        created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+      );
+
 ALTER TABLE cars ADD COLUMN IF NOT EXISTS make VARCHAR(255);
 ALTER TABLE cars ADD COLUMN IF NOT EXISTS model VARCHAR(255);
+
+
       -- Insert data into cars table
       INSERT INTO cars (name, make, model)
 VALUES
@@ -335,6 +348,90 @@ VALUES
     ((SELECT id FROM users WHERE username = 'xander_baker'), (SELECT id FROM cars WHERE name = 'Ford Escape'), 'Great for city driving, but lacks power for highway cruising.', 3),
     ((SELECT id FROM users WHERE username = 'yasmine_hall'), (SELECT id FROM cars WHERE name = 'Ford Edge'), 'Comfortable but could use better tech integration.', 3),
     ((SELECT id FROM users WHERE username = 'zoe_adams'), (SELECT id FROM cars WHERE name = 'Ford Flex'), 'Unique design and roomy, but too boxy for my liking.', 3);
+    
+    -- Insert data into comments table
+      INSERT INTO comments (user_id, review_id, comment_text)
+VALUES
+  ((SELECT id FROM users WHERE username = 'john_doe'), 
+   (SELECT id FROM reviews WHERE review_text = 'Great car! Love the performance and comfort. Highly recommend.'), 
+   'I completely agree with this review! Amazing vehicle.'),
+  
+  ((SELECT id FROM users WHERE username = 'alice_smith'), 
+   (SELECT id FROM reviews WHERE review_text = 'Compact SUV with decent features, but interior could be better.'), 
+   'I feel the same! The exterior looks great, but I wish the interior had more premium materials.'),
+  
+  ((SELECT id FROM users WHERE username = 'bob_johnson'), 
+   (SELECT id FROM reviews WHERE review_text = 'Classic style, but outdated. Would prefer more modern tech.'), 
+   'Agreed! The style is nice, but it definitely needs some modern features to keep up with newer models.'),
+  
+  ((SELECT id FROM users WHERE username = 'jane_doe'), 
+   (SELECT id FROM reviews WHERE review_text = 'Comfortable and reliable. A great daily commuter.'), 
+   'Exactly! This car is a great choice for daily use. It’s reliable and gets me through the week without any issues.'),
+  
+  ((SELECT id FROM users WHERE username = 'charlie_brown'), 
+   (SELECT id FROM reviews WHERE review_text = 'Sporty and sleek design, handles beautifully. Would buy again.'), 
+   'Couldn’t agree more! The handling is incredible, and the design is stunning. Definitely would buy again!'),
+  
+  ((SELECT id FROM users WHERE username = 'david_jones'), 
+   (SELECT id FROM reviews WHERE review_text = 'Good performance, but fuel economy could be better.'), 
+   'True! It performs well, but I think they could have done better with fuel efficiency.'),
+  
+  ((SELECT id FROM users WHERE username = 'emma_davis'), 
+   (SELECT id FROM reviews WHERE review_text = 'Very compact. Not enough space for a family. Could be better.'), 
+   'Definitely agree! It’s a great car for city driving, but not the best for families who need more space.'),
+  
+  ((SELECT id FROM users WHERE username = 'frank_miller'), 
+   (SELECT id FROM reviews WHERE review_text = 'Luxury car, great features, but quite expensive. Still worth it for the comfort.'), 
+   'I think it’s totally worth the price if you value comfort and luxury. The features are amazing!'),
+  
+  ((SELECT id FROM users WHERE username = 'grace_wilson'), 
+   (SELECT id FROM reviews WHERE review_text = 'Compact and sporty, but not great for families. Ideal for singles or couples.'), 
+   'Exactly! It’s a perfect car for those who love driving, but not ideal for families with kids.'),
+  
+  ((SELECT id FROM users WHERE username = 'henry_moore'), 
+   (SELECT id FROM reviews WHERE review_text = 'Solid car, great handling, but doesn’t feel as premium as I hoped for the price.'), 
+   'I was expecting more of a premium feel too, especially for the price. The handling is good, though.'),
+  
+  ((SELECT id FROM users WHERE username = 'isla_taylor'), 
+   (SELECT id FROM reviews WHERE review_text = 'Stylish and fast, but backseat space is tight. Love the driving experience.'), 
+   'The driving experience is amazing, but yeah, the backseat could definitely use some more room.'),
+  
+  ((SELECT id FROM users WHERE username = 'jackson_anderson'), 
+   (SELECT id FROM reviews WHERE review_text = 'Premium feel, fantastic ride quality, but a bit heavy on the wallet.'), 
+   'It’s a bit pricey, but I think it’s worth the investment for the luxury and ride quality.'),
+  
+  ((SELECT id FROM users WHERE username = 'katie_thomas'), 
+   (SELECT id FROM reviews WHERE review_text = 'Great looks, great performance. I wish the infotainment system was more intuitive.'), 
+   'Great car overall, but I agree with you. The infotainment system could use some improvement.'),
+  
+  ((SELECT id FROM users WHERE username = 'luke_lee'), 
+   (SELECT id FROM reviews WHERE review_text = 'Ultimate luxury sedan. Feels like a dream to drive.'), 
+   'This is by far one of the best driving experiences I’ve had. It’s like driving on clouds!'),
+  
+  ((SELECT id FROM users WHERE username = 'mia_harris'), 
+   (SELECT id FROM reviews WHERE review_text = 'Comfortable and fast, but I expect better technology features for the price.'), 
+   'The car is quick and comfy, but I think the tech features could be updated to match the price.'),
+  
+  ((SELECT id FROM users WHERE username = 'noah_king'), 
+   (SELECT id FROM reviews WHERE review_text = 'Great compact SUV, fun to drive, but small backseat.'), 
+   'I love how it handles, but I wish the backseat was a bit roomier for passengers.'),
+  
+  ((SELECT id FROM users WHERE username = 'olivia_clark'), 
+   (SELECT id FROM reviews WHERE review_text = 'Sporty and agile, but fuel economy could be improved.'), 
+   'The car is fun to drive, but yeah, fuel economy is something they could improve.'),
+  
+  ((SELECT id FROM users WHERE username = 'paul_rodgers'), 
+   (SELECT id FROM reviews WHERE review_text = 'Solid handling, and the M Sport version is a blast to drive. Expensive, but fun.'), 
+   'The M Sport version is insane! It’s a bit pricey, but definitely worth it for the driving experience.'),
+  
+  ((SELECT id FROM users WHERE username = 'quinn_walker'), 
+   (SELECT id FROM reviews WHERE review_text = 'Love the luxury feel and performance. Still, a bit pricey for what you get.'), 
+   'The luxury is amazing, but I agree, the price is a bit steep for what’s offered.'),
+  
+  ((SELECT id FROM users WHERE username = 'rachel_wood'), 
+   (SELECT id FROM reviews WHERE review_text = 'Impressive ride but feels clunky around turns. Not my favorite BMW SUV.'), 
+   'The ride is great, but I’ve noticed it gets a bit clunky on sharp turns. Not my favorite either.');
+    
     `;
 
     // Execute the SQL script to drop, create, and insert data
