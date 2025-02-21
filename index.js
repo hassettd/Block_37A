@@ -1,28 +1,24 @@
-// Required Dependencies
 require("dotenv").config();
 const express = require("express");
 const morgan = require("morgan");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { client } = require("./common"); // Import the single instance of client from common.js
+const { client } = require("./common");
 const { getCars, getReviewsForCar, getAverageScoreForCar } = require("./db");
 const uuid = require("uuid");
 const { body, validationResult } = require("express-validator");
 
-// Initialize Express App
 const app = express();
 const PORT = 3000;
 
-// Middleware
-app.use(express.json()); // for parsing JSON bodies
-app.use(morgan("dev")); // for logging requests
-// JWT Secret from environment variable
+app.use(express.json());
+app.use(morgan("dev"));
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) {
   console.error("JWT_SECRET is missing");
   process.exit(1);
 }
-// Authentication Middleware
+
 const authenticateJWT = (req, res, next) => {
   const token =
     req.header("Authorization") &&
